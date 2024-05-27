@@ -1,42 +1,92 @@
+import { Euler } from "three";
+
 export const dist = 1.5;
 export const positions = [-dist, 0, dist];
+export const INITIAL_ROTATION = new Euler(0, 0, 0);
 
-/* faces order: right down left up back front */
-export const rubiksSides = [
+type RubiksSide = {
+  // side & move name
+  name: string;
+  // color
+  color: string;
+  // Condition for a cubelet to be in this side
+  isInSide: (position: { x: number; y: number; z: number }) => boolean;
+  // Get the new coordinates of a cubelet of this side after clockwise rotation
+  updatePosition: (position: { x: number; y: number; z: number }) => {
+    x: number;
+    y: number;
+    z: number;
+  };
+  // Rotation increment corresponding to the move
+  rotationIncrement: [number, number, number];
+};
+
+/* faces order: right left top bottom front back */
+export const rubiksSides: RubiksSide[] = [
   {
-    position: "right",
-    name: "blue",
-    color: "#0046ad",
-    isCubeletOnSide: ({ x }: { x: number }) => x === dist,
+    name: "R",
+    color: "#0046ad", // blue
+    isInSide: ({ x }: { x: number }) => x === dist,
+    updatePosition: ({ x, y, z }: { x: number; y: number; z: number }) => ({
+      x,
+      y: z,
+      z: -y,
+    }),
+    rotationIncrement: [-Math.PI / 2, 0, 0],
   },
   {
-    position: "down",
-    name: "green",
-    color: "#009b48",
-    isCubeletOnSide: ({ x }: { x: number }) => x === -dist,
+    name: "L",
+    color: "#009b48", // green
+    isInSide: ({ x }: { x: number }) => x === -dist,
+    updatePosition: ({ x, y, z }: { x: number; y: number; z: number }) => ({
+      x,
+      y: -z,
+      z: y,
+    }),
+    rotationIncrement: [Math.PI / 2, 0, 0],
   },
   {
-    position: "left",
-    name: "white",
-    color: "#FFFFFF",
-    isCubeletOnSide: ({ y }: { y: number }) => y === dist,
+    name: "U",
+    color: "#FFFFFF", // white
+    isInSide: ({ y }: { y: number }) => y === dist,
+    updatePosition: ({ x, y, z }: { x: number; y: number; z: number }) => ({
+      x: z,
+      y,
+      z: -x,
+    }),
+    rotationIncrement: [0, -Math.PI / 2, 0],
   },
   {
-    position: "up",
-    name: "yellow",
-    color: "#ffd500",
-    isCubeletOnSide: ({ y }: { y: number }) => y === -dist,
+    name: "D",
+    color: "#ffd500", // yellow
+    isInSide: ({ y }: { y: number }) => y === -dist,
+    updatePosition: ({ x, y, z }: { x: number; y: number; z: number }) => ({
+      x: -z,
+      y,
+      z: x,
+    }),
+    rotationIncrement: [0, Math.PI / 2, 0],
   },
   {
-    position: "back",
-    name: "red",
-    color: "#b71234",
-    isCubeletOnSide: ({ z }: { z: number }) => z === dist,
+    name: "F",
+    color: "#b71234", // red
+    isInSide: ({ z }: { z: number }) => z === dist,
+    updatePosition: ({ x, y, z }: { x: number; y: number; z: number }) => ({
+      x: -y,
+      y: x,
+      z,
+    }),
+    rotationIncrement: [0, 0, -Math.PI / 2],
   },
   {
-    position: "front",
-    name: "orange",
-    color: "#ff5800",
-    isCubeletOnSide: ({ z }: { z: number }) => z === -dist,
+    name: "B",
+    color: "#ff5800", // orange
+    isInSide: ({ z }: { z: number }) => z === -dist,
+    updatePosition: ({ x, y, z }: { x: number; y: number; z: number }) => ({
+      x: y,
+      y: -x,
+      z,
+    }),
+    rotationIncrement: [0, 0, Math.PI / 2],
   },
 ];
