@@ -2,7 +2,7 @@ import { Canvas } from "@react-three/fiber";
 import { Cubelet } from "./components/Cubelet";
 import { OrbitControls } from "@react-three/drei";
 import { positions } from "./consts";
-import "./App.css";
+import "./globals.css";
 
 const cubeletPositions = positions.flatMap((x) =>
   positions.flatMap((y) => positions.map((z) => ({ x, y, z }))),
@@ -23,11 +23,13 @@ function Scene() {
 
 function App() {
   return (
-    <Canvas>
-      <OrbitControls />
-      <ambientLight intensity={1} />
-      <Scene />
-    </Canvas>
+    <div className="h-full flex flex-col">
+      <Canvas>
+        <OrbitControls />
+        <ambientLight intensity={1} />
+        <Scene />
+      </Canvas>
+    </div>
   );
 }
 
