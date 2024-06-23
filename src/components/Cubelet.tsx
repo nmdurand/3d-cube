@@ -1,10 +1,8 @@
 import { rubiksSides } from "../consts";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Euler, Vector3 } from "three";
 import { getCurrentPosition } from "../utils";
-
-// For testing purposes
-const MOVES = ["B"];
+import { MovesContext } from "../context/movesContext";
 
 export function Cubelet({
   position,
@@ -14,9 +12,12 @@ export function Cubelet({
   // On first render record the initial position of the cubelet
   const [initialPosition] = useState(position);
 
+  const { current: currentMoves } = useContext(MovesContext);
+
+  console.log(">>> moves", currentMoves);
   const { rotation: currentRotation } = getCurrentPosition({
     initialPosition,
-    moves: MOVES,
+    moves: currentMoves,
   });
 
   return (
