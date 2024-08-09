@@ -1,6 +1,6 @@
 import { ReactNode, createContext, useReducer } from "react";
-import { Move } from "./move";
-import { rubiksSides, positions, IDENTITY_QUATERNION } from "../consts";
+import { Move, movesDetails } from "./move";
+import { positions, IDENTITY_QUATERNION, getCubeletColors } from "../consts";
 import { Quaternion, Vector3 } from "three";
 
 export type CubeletData = {
@@ -18,7 +18,7 @@ type CubeData = Array<CubeletData>;
 type MovesAction = { type: "ADD_MOVE"; move: Move };
 type MovesStateType = {
   cubeData: CubeData;
-  current: Move[];
+  moveHistory: Move[];
   dispatch: (action: MovesAction) => void;
 };
 
@@ -29,9 +29,7 @@ const initialCubeData: Array<CubeletData> = positions.flatMap((x) =>
       return {
         initialPosition,
         transforms: [IDENTITY_QUATERNION],
-        colors: rubiksSides.map((side) =>
-          side.isInSide(initialPosition) ? side.color : "#000000",
-        ),
+        colors: getCubeletColors(initialPosition),
       };
     }),
   ),
@@ -39,7 +37,7 @@ const initialCubeData: Array<CubeletData> = positions.flatMap((x) =>
 
 export const MovesContext = createContext<MovesStateType>({
   cubeData: initialCubeData,
-  current: [],
+  moveHistory: [],
   dispatch: () => {},
 });
 
@@ -58,18 +56,14 @@ function updateCubeData({
   cubeData: CubeData;
   move: Move;
 }): CubeData {
-  const rubikSide = rubiksSides.find(({ move: sideMove }) => sideMove === move);
-  if (!rubikSide) {
-    return cubeData;
-  }
-  const { isInSide, rotationQuaternion } = rubikSide;
+  const { isImpacted, rotationQuaternion } = movesDetails[move];
   return cubeData.map((cubelet) => {
     const currentTransform = cubelet.transforms[cubelet.transforms.length - 1];
     const currentPosition = normalizePosition(
       cubelet.initialPosition.clone().applyQuaternion(currentTransform),
     );
 
-    const newTransform = isInSide(currentPosition)
+    const newTransform = isImpacted(currentPosition)
       ? rotationQuaternion.clone().multiply(currentTransform)
       : currentTransform;
     return {
@@ -90,7 +84,7 @@ function MovesReducer(
     });
     return {
       ...movesState,
-      current: [...movesState.current, action.move],
+      moveHistory: [...movesState.moveHistory, action.move],
       cubeData: newCubeData,
     };
   } else {
@@ -100,7 +94,7 @@ function MovesReducer(
 
 const initialState: MovesStateType = {
   cubeData: initialCubeData,
-  current: [],
+  moveHistory: [],
   dispatch: () => {},
 };
 
