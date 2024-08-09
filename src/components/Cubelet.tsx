@@ -1,30 +1,19 @@
-import { rubiksSides } from "../consts";
-import { useContext, useState } from "react";
-import { Euler, Vector3 } from "three";
-import { getCurrentPosition } from "../utils";
-import { MovesContext } from "../context/movesContext";
+import { Vector3 } from "three";
+import { CubeletData } from "../context/movesContext";
 
-export function Cubelet({
-  position,
-}: {
-  position: { x: number; y: number; z: number };
-}) {
-  // On first render record the initial position of the cubelet
-  const [initialPosition] = useState(position);
-
-  const { current: currentMoves } = useContext(MovesContext);
-
-  console.log(">>> moves", currentMoves);
-  const { rotation: currentRotation } = getCurrentPosition({
-    initialPosition,
-    moves: currentMoves,
-  });
+export function Cubelet({ cubeletData }: { cubeletData: CubeletData }) {
+  const { initialPosition, transforms, colors } = cubeletData;
+  const key = `${initialPosition.x}-${initialPosition.y}-${initialPosition.z}`;
+  const currentTransform = transforms[transforms.length - 1];
 
   return (
     <mesh
-      rotation={
-        new Euler(currentRotation.x, currentRotation.y, currentRotation.z)
-      }
+      quaternion={[
+        currentTransform.x,
+        currentTransform.y,
+        currentTransform.z,
+        currentTransform.w,
+      ]}
     >
       <mesh
         position={
@@ -32,11 +21,11 @@ export function Cubelet({
         }
       >
         <boxGeometry attach="geometry" args={[1, 1, 1]} />
-        {rubiksSides.map(({ color, isInSide }, i) => (
+        {colors.map((color, i) => (
           <meshBasicMaterial
-            key={color}
+            key={`${key}-${i}`}
             attach={`material-${i}`}
-            color={isInSide(initialPosition) ? color : "#000000"}
+            color={color}
           />
         ))}
       </mesh>

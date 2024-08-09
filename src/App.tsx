@@ -2,23 +2,19 @@ import { Canvas } from "@react-three/fiber";
 import { Cubelet } from "./components/Cubelet";
 import { OrbitControls } from "@react-three/drei";
 import { Controls } from "./components/Controls";
-import { positions } from "./consts";
+import { MovesContext } from "./context/movesContext";
 import { MovesProvider } from "./context/movesContext";
 import "./globals.css";
-
-const cubeletPositions = positions.flatMap((x) =>
-  positions.flatMap((y) => positions.map((z) => ({ x, y, z }))),
-);
+import { useContext } from "react";
 
 function Scene() {
+  const { cubeData } = useContext(MovesContext);
+
   return (
     <mesh>
-      {cubeletPositions.map((position) => (
-        <Cubelet
-          key={`${position.x}+${position.y}+${position.z}`}
-          position={position}
-        />
-      ))}
+      {cubeData.map((cubeletData, index) => {
+        return <Cubelet key={`cubelet-${index}`} cubeletData={cubeletData} />;
+      })}
     </mesh>
   );
 }
