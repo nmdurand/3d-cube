@@ -9,7 +9,7 @@ export type CubeletData = {
   // history of transforms for cubelet positions
   transforms: Array<Quaternion>;
   // Colors of the cubelet
-  colors: string[];
+  colors: Array<string>;
 };
 
 // All cubelets are registered in a single array
@@ -18,7 +18,7 @@ type CubeData = Array<CubeletData>;
 type MovesAction = { type: "ADD_MOVE"; move: Move };
 type MovesStateType = {
   cubeData: CubeData;
-  moveHistory: Move[];
+  movesHistory: Array<Move>;
   dispatch: (action: MovesAction) => void;
 };
 
@@ -37,7 +37,7 @@ const initialCubeData: Array<CubeletData> = positions.flatMap((x) =>
 
 export const MovesContext = createContext<MovesStateType>({
   cubeData: initialCubeData,
-  moveHistory: [],
+  movesHistory: [],
   dispatch: () => {},
 });
 
@@ -84,7 +84,7 @@ function MovesReducer(
     });
     return {
       ...movesState,
-      moveHistory: [...movesState.moveHistory, action.move],
+      movesHistory: [...movesState.movesHistory, action.move],
       cubeData: newCubeData,
     };
   } else {
@@ -94,7 +94,7 @@ function MovesReducer(
 
 const initialState: MovesStateType = {
   cubeData: initialCubeData,
-  moveHistory: [],
+  movesHistory: [],
   dispatch: () => {},
 };
 

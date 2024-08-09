@@ -10,7 +10,7 @@ export function Controls() {
   };
 
   return (
-    <div className="w-full p-10 flex justify-center gap-4 text-lg">
+    <div className="w-full p-10 flex flex-wrap justify-center gap-4 text-lg">
       {Object.values(Move).map((value) => (
         <button className="" key={value} onClick={() => handleMove(value)}>
           {value}

@@ -4,6 +4,7 @@ import { OrbitControls } from "@react-three/drei";
 import { Controls } from "./components/Controls";
 import { MovesContext } from "./context/movesContext";
 import { MovesProvider } from "./context/movesContext";
+import { MovesHistory } from "./components/MovesHistory";
 import "./globals.css";
 import { useContext } from "react";
 
@@ -23,6 +24,7 @@ function App() {
   return (
     <MovesProvider>
       <div className="h-full flex flex-col">
+        <MovesHistory />
         <Canvas>
           <OrbitControls />
           <ambientLight intensity={1} />
